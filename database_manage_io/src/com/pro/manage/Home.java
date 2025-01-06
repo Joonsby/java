@@ -1,6 +1,5 @@
 package com.pro.manage;
 
-import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -14,12 +13,13 @@ import javax.swing.JPanel;
 class Home implements ActionListener {
 	
 	JFrame homePage = new JFrame("성적관리"); // 홈페이지 JFrame
-	JLabel homeText = new JLabel("Score Manage", JLabel.CENTER); // 홈페이지 제목
 	JButton signUpBtn = new JButton("회원가입"); // 회원가입 버튼
 	JButton logInBtn = new JButton("로그인"); // 로그인 버튼
 	JPanel btnP = new JPanel();
 
 	public Home() {
+		JLabel homeText = new JLabel("Score Manage", JLabel.CENTER); // 홈페이지 제목
+		
 		btnP.add(signUpBtn);
 		btnP.add(logInBtn);
 		
@@ -47,7 +47,7 @@ class Home implements ActionListener {
 			homePage.setVisible(false);
 			SignUp signup = new SignUp();
 			signup.setFrame();
-		} else if (e.getSource() == logInBtn) {
+		} else {
 			homePage.setVisible(false);
 			LogIn login = new LogIn();
 			login.setFrame();

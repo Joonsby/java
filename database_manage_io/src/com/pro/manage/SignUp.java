@@ -1,15 +1,11 @@
 package com.pro.manage;
 
 import java.awt.BorderLayout;
-import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -18,7 +14,6 @@ import java.sql.Statement;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -26,24 +21,11 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
-import javax.swing.text.NumberFormatter;
 
 // name, id, pw, phone, birth, gender, email
 
 class SignUp extends WindowAdapter implements ActionListener {
-	// 회원정보 전역변수 선언
-	String userName;
-	String userId;
-	String userPw;
-	String userNewsagency;
-	String userPhNum1;
-	String userPhNum2;
-	String userPhNum3;
-	String userBirth;
-	String userGender;
-	String userFirstEmail;
-	String userMiddleEmail;
-	String userLastEmail;
+	
 	JFrame signUpPage = new JFrame("회원가입");
 	// component 전역변수로 선언
 	JLabel signUpText = new JLabel("회원가입", JLabel.CENTER);
@@ -75,11 +57,29 @@ class SignUp extends WindowAdapter implements ActionListener {
 	JTextField lastEmail = new JTextField(15);
 
 	// mysql 초기값 설정
-	Connection connection = null;
-	Statement statement = null;
-	ResultSet resultSet = null;
+	Connection conn = null;
+	Statement stmt = null;
+	ResultSet rs = null;
+	
+	private void conn() {
+		try {
+			conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/manageproject", "root", "xhddlf336!");
+			stmt = conn.createStatement();
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private void close() {
+		try {
+			stmt.close();
+			conn.close();
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+	}
 
-	void setFrame() { // 프레임 설정
+	public void setFrame() { // 프레임 설정
 		signUpPage.addWindowListener(new SignUp());
 		// 성별
 		ButtonGroup gen = new ButtonGroup(); // radio의 버튼 그룹
@@ -164,14 +164,13 @@ class SignUp extends WindowAdapter implements ActionListener {
 		}
 	}
 
-	void idCheck() {
+	private void idCheck() {
 		try {
-			connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/manageproject", "root", "xhddlf336!");
-			statement = connection.createStatement();
-			resultSet = statement.executeQuery("select *from userinfo;");
+			conn();
+			rs = stmt.executeQuery("select * from userinfo;");
 			String id = this.id.getText();
-			if (resultSet.next()) { // 필드안의 다음내용이 없을 때까지 콘솔창에 자료를 입력한다. (다음 자료가 없을때까지 출력됨)
-				if (resultSet.getString("id").equals(id)) {
+			if (rs.next()) { // 필드안의 다음내용이 없을 때까지 콘솔창에 자료를 입력한다. (다음 자료가 없을때까지 출력됨)
+				if (rs.getString("id").equals(id)) {
 					JOptionPane.showMessageDialog(null, "동일한 ID가 존재합니다.");
 				} else if (id.length() > 11 || id.length() <= 3) {
 					JOptionPane.showMessageDialog(null, "아이디는 4 ~ 12 글자로 입력해주세요.");
@@ -180,29 +179,35 @@ class SignUp extends WindowAdapter implements ActionListener {
 				}
 			}
 		} catch (Exception e) {
-			// TODO: handle exception
-			System.out.println(e);
+			e.printStackTrace();
+		} finally {
+			try {
+				rs.close();
+				close();
+			} catch(Exception e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
-	void inputInfo() {
+	private void inputInfo() {
 
 		// 회원정보 클래스로 입력받은 값 보내기
-		userName = name.getText();
-		userId = id.getText();
-		userPw = new String(pw.getPassword());
-		userNewsagency = (String) newsagency.getSelectedItem();
-		userPhNum1 = phNum1.getText();
-		userPhNum2 = phNum2.getText();
-		userPhNum3 = phNum3.getText();
-		userBirth = birth.getText();
-		userFirstEmail = firstEmail.getText();
-		userMiddleEmail = middleEmail.getText();
-		userLastEmail = lastEmail.getText();	
+		String userName = name.getText();
+		String userId = id.getText();
+		String userPw = new String(pw.getPassword());
+		String userNewsagency = (String) newsagency.getSelectedItem();
+		String userPhNum1 = phNum1.getText();
+		String userPhNum2 = phNum2.getText();
+		String userPhNum3 = phNum3.getText();
+		String userBirth = birth.getText();
+		String userFirstEmail = firstEmail.getText();
+		String userMiddleEmail = middleEmail.getText();
+		String userLastEmail = lastEmail.getText();
+		String userGender = null;
 
 		try {
-			connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/manageproject", "root", "xhddlf336!");
-			statement = connection.createStatement();
+			conn();
 			if (userName.length() > 12 || userName.length() <= 1) {
 				JOptionPane.showMessageDialog(null, "이름은 2~12 글자로 입력해주세요.");
 			} else if (userId.length() > 11 || userId.length() <= 3) {
@@ -222,7 +227,7 @@ class SignUp extends WindowAdapter implements ActionListener {
 				} else if (this.female.isSelected()) {
 					userGender = female.getText();
 				}
-				statement.executeUpdate(
+				stmt.executeUpdate(
 						"insert into userinfo(name,id,pw,newsagency,firstPhoneNum,middlePhoneNum,lastPhoneNum,birth,gender,firstEmail,middleEmail,lastEmail)"
 								+ "values('" + userName + "'" + "," + "'" + userId + "'" + "," + "'" + userPw + "'"
 								+ "," + "'" + userNewsagency + "'" + "," + "'" + userPhNum1 + "'" + "," + "'"
@@ -235,15 +240,12 @@ class SignUp extends WindowAdapter implements ActionListener {
 			}
 
 		} catch (Exception e) {
-			// TODO: handle exception
-			System.out.println(e);
+			e.printStackTrace();
 		} finally {
 			try {
-				statement.close();
-				connection.close();
+				close();
 			} catch (Exception e) {
-				// TODO: handle exception
-				System.out.println(e);
+				e.printStackTrace();
 			}
 		}
 	}
