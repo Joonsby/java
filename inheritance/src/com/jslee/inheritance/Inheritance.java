@@ -21,10 +21,6 @@ class X extends B //, X 다중상속은 불가능하다. 그래서 여러명의 부모를 가질 수 없
 	
 }
 
-class C{
-	
-}
-
 public class Inheritance {
 
 	public static void main(String[] args) {

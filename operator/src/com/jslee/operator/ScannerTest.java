@@ -9,8 +9,7 @@ public class ScannerTest {
 		Scanner in = new Scanner(System.in); // Scanner을 생성해준다
 		int x = in.nextInt(); // 사용자가 입력한 (정수)값을 받아온다.
 		System.out.println("x = " + x);
-		if(x % 2 == 0) 
-		{
+		if(x % 2 == 0) {
 			System.out.println("짝수입니다.");
 		} else {
 			System.out.println("홀수입니다.");

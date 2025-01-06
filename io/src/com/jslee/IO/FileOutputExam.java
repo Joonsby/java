@@ -9,7 +9,7 @@ public class FileOutputExam {
 		FileOutputStream f = null; // FileOutputStream 은 무조건 해당 파일을 생성한다. 존재하는 파일일 경우 덮어쓰기함.
 		try {
 //			f = new FileOutputStream("C:\\Users\\Administrator.User -2023JNJRO\\Desktop\\새 폴더\\text.txt");
-			f = new FileOutputStream("C:\\Users\\Administrator.User -2023JNJRO\\Desktop\\새 폴더\\text.txt", true);
+			f = new FileOutputStream("D:\\manage_io_data\\id\\test.txt", true);
 			// true를 넣게 되면 이전에 output했던 내용들이 초기화가 되지 않고 누적된다.
 			String data = "no";
 			String data1 = "yes";
